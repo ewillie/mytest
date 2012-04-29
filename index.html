@@ -26,36 +26,60 @@
 
 <!-- Just a little something to help with formatting the display of JSON results -->
 <script type="text/javascript" src="http://static.stackmob.com/resources/js/jsonFormatter-0.1.0-min.js"></script>
+
+<script>  
+	jQuery(window).ready(function(){  
+		jQuery("#btnInit").click(initiate_geolocation);  
+	});  
+
+	function initiate_geolocation() {  
+		navigator.geolocation.getCurrentPosition(handle_geolocation_query,handle_errors);  
+	}  
+
+	function handle_errors(error)  
+	{  
+		switch(error.code)  
+		{  
+			case error.PERMISSION_DENIED: alert("user did not share geolocation data");  
+			break;  
+
+			case error.POSITION_UNAVAILABLE: alert("could not detect current position");  
+			break;  
+
+			case error.TIMEOUT: alert("retrieving position timed out");  
+			break;  
+
+			default: alert("unknown error");  
+			break;  
+		}  
+	}  
+
+	function handle_geolocation_query(position)  
+	{ 
+		var text = "Latitude: "  + position.coords.latitude  + "<br/>" +  
+				   "Longitude: " + position.coords.longitude + "<br/>" +  
+				   "Accuracy: "  + position.coords.accuracy  + "m<br/>" +  
+				   "Time: " + new Date(position.timestamp);  
+		jQuery("#info").html(text);
+	
+		var image_url = "http://maps.google.com/maps/api/staticmap?sensor=false&center=" + position.coords.latitude + "," +  
+						position.coords.longitude + "&zoom=14&size=300x400&markers=color:blue|label:S|" +  
+						position.coords.latitude + ',' + position.coords.longitude;  
+	  
+		jQuery("#map").remove();  
+		jQuery(document.body).append(  
+			jQuery(document.createElement("img")).attr("src", image_url).attr('id','map')  
+		);  
+	}  
+
+</script> 
 </head>
 <body>
-
-<img src="https://www.stackmob.com/resources/images/logo.png" alt="StackMob Logo"/>
-
-<div class="description">
-This example shows you how you can save and fetch users to your StackMob datastore.  Right click and view the source.
+<div>  
+	<button id="btnInit" >Find my location</button>  
 </div>
+<div id="info"></div> 
 
-<h1>Create and Fetch new users with your StackMob datastore</h1>
-
-<div class="form">
-	<!--Forms that will create and read users--> 
-	<input id="username" type="text" value=""/>
-	<input id="create" type="submit" onclick="create();" value="Create User" class="button"/>
-	<input id="read" type="submit" onclick="read();" value="Fetch User" class="button"/>
-</div>
-
-<div class="results_header"><h1>Results</h1> <div class="results_objectbrowser">You can also view your data via the web-based <a href="https://www.stackmob.com/platform/api/schemas/browser" target="_blank">Object Browser</a> on StackMob.</div></div>
-<textarea id="results">
-StackMob's server responses will show up here after you submit your form.
-</textarea>
-
-
-
-<div class="footnote">This demo MUST be run in <a href="https://www.stackmob.com/platform/help/tutorials/html5_js_sdk#a-step_2_of_3:_running_this_file_locally" target="_blank">StackMob's Local HTML Runner</a> or be hosted on StackMob's HTML5 hosting solution.  Otherwise the required AJAX calls will not work.</div>
- 
- 
- 
- 
  
  
 <!-- JAVASCRIPT CODE AND STACKMOB JS SDK EXAMPLES BELOW! -->
